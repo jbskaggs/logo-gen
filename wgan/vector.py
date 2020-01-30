@@ -247,7 +247,7 @@ class Vector(object):
                         yield labels
 
             all_samples = []
-            for i in tqdm(xrange(n // self.wgan.cfg.BATCH_SIZE)):
+            for i in tqdm(range(n // self.wgan.cfg.BATCH_SIZE)):
                 all_samples.append(self.sample_z(z=self.gen_z(), y=inf_train_gen().next()))
             all_samples = np.concatenate(all_samples, axis=0)
         return self.get_inception_score(list(all_samples.transpose((0, 2, 3, 1))))
@@ -261,7 +261,7 @@ class Vector(object):
                 for _, labels in train_gen():
                     yield labels
         all_samples = []
-        for i in tqdm(xrange(n // self.wgan.cfg.BATCH_SIZE)):
+        for i in tqdm(range(n // self.wgan.cfg.BATCH_SIZE)):
             all_samples.append(self.sample_z(z=self.gen_z(), y=inf_train_gen().next()))
         all_samples = np.concatenate(all_samples, axis=0)
         if resize:

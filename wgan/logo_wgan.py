@@ -39,7 +39,7 @@ class Config(object):
         #                                      containing the labels or the path to the label dataset within a HDF5 file
         self.N_LABELS = 0  # Number of label classes
         self.RUN_NAME = 'layer_cond_clean'  # name for this experiment run
-        self.N_GPUS = 1
+        self.N_GPUS = 0
         self.ARCHITECTURE = 'resnet-32'  # used GAN architecture
         self.MODE = 'wgan-gp'  # training mode
         self.BATCH_SIZE = 64  # Critic batch size
@@ -128,7 +128,7 @@ class WGAN(object):
         self.cfg = cfg
 
         if cfg.CONDITIONAL and (not cfg.ACGAN) and (not cfg.LAYER_COND) and (not cfg.NORMALIZATION_D):
-            print "WARNING! Conditional model without normalization in D might be effectively unconditional!"
+            print("WARNING! Conditional model without normalization in D might be effectively unconditional!")
 
         # returns a (Generator, Discriminator) pair according to config
         def get_architecture(cfg):
@@ -482,7 +482,7 @@ class WGAN(object):
 
         def get_inception_score(n):
             all_samples = []
-            for i in xrange(n / 100):
+            for i in range(n / 100):
                 # todo
                 all_samples.append(session.run(samples_100, feed_dict={self.t_train: True}))
             all_samples = np.concatenate(all_samples, axis=0)
@@ -499,7 +499,7 @@ class WGAN(object):
                     yield images, _labels
 
         for name, grads_and_vars in [('G', gen_gv), ('D', disc_gv)]:
-            print "{} Params:".format(name)
+            print("{} Params:".format(name))
             total_param_count = 0
             for g, v in grads_and_vars:
                 shape = v.get_shape()
@@ -511,12 +511,12 @@ class WGAN(object):
                 total_param_count += param_count
 
                 if g == None:
-                    print "\t{} ({}) [no grad!]".format(v.name, shape_str)
+                    print("\t{} ({}) [no grad!]".format(v.name, shape_str))
                 else:
-                    print "\t{} ({})".format(v.name, shape_str)
-            print "Total param count: {}".format(
+                    print("\t{} ({})".format(v.name, shape_str))
+            print("Total param count: {}".format(
                 locale.format("%d", total_param_count, grouping=True)
-            )
+            ))
         run_number = len(next(os.walk(self.tb_dir))[1]) + 1
         summaries_merged = tf.summary.merge_all()
         summary_writer = tf.summary.FileWriter(os.path.join(self.tb_dir, 'run_%i' % run_number), session.graph)
@@ -551,7 +551,7 @@ class WGAN(object):
             _costs = {'cost': [], 'wgan': [], 'acgan': [], 'acgan_acc': [], 'acgan_fake_acc': []}
         else:
             _costs = {'cost': []}
-        for iteration in xrange(self.current_iter, cfg.ITERS):
+        for iteration in range(self.current_iter, cfg.ITERS):
             start_time = time.time()
 
             if cfg.MODE == 'dcgan':
@@ -559,7 +559,7 @@ class WGAN(object):
             else:
                 gen_iters = 1
             if iteration > 0 and '_labels' in locals():
-                for i in xrange(gen_iters):
+                for i in range(gen_iters):
                     _ = self.session.run([gen_train_op], feed_dict={self._iteration: iteration,
                                                                     self.all_real_labels: _labels,
                                                                     self.t_train: True})
@@ -568,7 +568,7 @@ class WGAN(object):
                 disc_iters = 1
             else:
                 disc_iters = cfg.N_CRITIC
-            for i in xrange(disc_iters):
+            for i in range(disc_iters):
                 _data, _labels = gen.next()
                 if _labels is None:
                     _labels = [0] * cfg.BATCH_SIZE
@@ -651,3 +651,4 @@ if __name__ == '__main__':
             wgan = WGAN(session, config_dict=arg_dict, train=args.train)
         if args.train:
             wgan.train()
+        print(wgan.sample())

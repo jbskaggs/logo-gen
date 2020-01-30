@@ -90,7 +90,7 @@ def main(_):
                 input_fname_pattern=FLAGS.input_fname_pattern,
                 is_crop=FLAGS.is_crop,
                 checkpoint_dir=FLAGS.checkpoint_dir,
-                sample_dir=FLAGS.sample_dir,
+                # sample_dir=FLAGS.sample_dir,
                 num_g_updates=FLAGS.num_g_updates,
                 z_dim=FLAGS.z_dim,
                 gf_dim=FLAGS.gf_dim,
