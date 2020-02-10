@@ -39,7 +39,7 @@ class Config(object):
         #                                      containing the labels or the path to the label dataset within a HDF5 file
         self.N_LABELS = 0  # Number of label classes
         self.RUN_NAME = 'layer_cond_clean'  # name for this experiment run
-        self.N_GPUS = 0
+        self.N_GPUS = 1
         self.ARCHITECTURE = 'resnet-32'  # used GAN architecture
         self.MODE = 'wgan-gp'  # training mode
         self.BATCH_SIZE = 64  # Critic batch size
