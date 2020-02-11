@@ -634,7 +634,7 @@ if __name__ == '__main__':
     config_dict = Config().__dict__
     parser.add_argument('--train', action='store_true', default=False)
     parser.add_argument('--load_config', action='store', type=str, default=None)
-    for key, value in config_dict.iteritems():
+    for key, value in config_dict.items():
         if key != 'train':
             parser.add_argument('--' + key, action='store', type=type(value), default=None)
     args = parser.parse_args()
