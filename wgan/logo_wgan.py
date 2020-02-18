@@ -282,7 +282,7 @@ class WGAN(object):
         cfg = self.cfg
         t_True = tf.constant(True, dtype=tf.bool)
         t_False = tf.constant(False, dtype=tf.bool)
-        DEVICES = ['/gpu:{}'.format(i) for i in xrange(cfg.N_GPUS)]
+        DEVICES = ['/gpu:{}'.format(i) for i in range(cfg.N_GPUS)]
         if len(DEVICES) == 1:  # Hack because the code assumes 2 GPUs
             DEVICES = [DEVICES[0], DEVICES[0]]
 
@@ -294,7 +294,7 @@ class WGAN(object):
         fake_data_splits = []
         for i, device in enumerate(DEVICES):
             with tf.device(device):
-                fake_data_splits.append(self.Generator(cfg, cfg.BATCH_SIZE / len(DEVICES), labels_splits[i],
+                fake_data_splits.append(self.Generator(cfg, int(cfg.BATCH_SIZE / len(DEVICES)), labels_splits[i],
                                                        is_training=self.t_train))
 
         all_real_data = tf.reshape(2 * ((tf.cast(self.all_real_data_int, tf.float32) / 256.) - .5),
@@ -303,8 +303,8 @@ class WGAN(object):
                                            maxval=1. / 128)  # dequantize
         all_real_data_splits = tf.split(all_real_data, len(DEVICES), axis=0)
 
-        DEVICES_B = DEVICES[:len(DEVICES) / 2]
-        DEVICES_A = DEVICES[len(DEVICES) / 2:]
+        DEVICES_B = [DEVICES[0]]
+        DEVICES_A = [DEVICES[1]]
 
         disc_costs = []
         disc_acgan_costs = []
@@ -325,8 +325,8 @@ class WGAN(object):
                     labels_splits[len(DEVICES_A) + i]
                 ], axis=0)
                 disc_all, disc_all_acgan = self.Discriminator(cfg, real_and_fake_data, real_and_fake_labels)
-                disc_real = disc_all[:cfg.BATCH_SIZE / len(DEVICES_A)]
-                disc_fake = disc_all[cfg.BATCH_SIZE / len(DEVICES_A):]
+                disc_real = disc_all[:int(cfg.BATCH_SIZE / len(DEVICES_A))]
+                disc_fake = disc_all[int(cfg.BATCH_SIZE / len(DEVICES_A)):]
                 if cfg.MODE == 'wgan' or cfg.MODE == 'wgan-gp':
                     disc_costs.append(tf.reduce_mean(disc_fake) - tf.reduce_mean(disc_real))
                 elif cfg.MODE == 'dcgan':
@@ -372,7 +372,7 @@ class WGAN(object):
                 ], axis=0)
                 if cfg.MODE == 'wgan-gp':
                     alpha = tf.random_uniform(
-                        shape=[cfg.BATCH_SIZE / len(DEVICES_A), 1],
+                        shape=[int(cfg.BATCH_SIZE / len(DEVICES_A)), 1],
                         minval=0.,
                         maxval=1.
                     )
@@ -408,7 +408,7 @@ class WGAN(object):
         gen_acgan_costs = []
         for i, device in enumerate(DEVICES):
             with tf.device(device):
-                n_samples = cfg.GEN_BS_MULTIPLE * cfg.BATCH_SIZE / len(DEVICES)
+                n_samples = int(cfg.GEN_BS_MULTIPLE * cfg.BATCH_SIZE / len(DEVICES))
                 fake_labels = tf.concat([labels_splits[(i + n) % len(DEVICES)] for n in range(cfg.GEN_BS_MULTIPLE)],
                                         axis=0)
                 disc_fake, disc_fake_acgan = self.Discriminator(cfg, self.Generator(cfg, n_samples, fake_labels,
@@ -529,7 +529,7 @@ class WGAN(object):
         self.restore_model()
 
         gen = inf_train_gen()
-        sample_images, sample_labels = gen.next()
+        sample_images, sample_labels = next(gen)
         if sample_labels is None:
             sample_labels = [0] * cfg.BATCH_SIZE
 
@@ -569,7 +569,7 @@ class WGAN(object):
             else:
                 disc_iters = cfg.N_CRITIC
             for i in range(disc_iters):
-                _data, _labels = gen.next()
+                _data, _labels = next(gen)
                 if _labels is None:
                     _labels = [0] * cfg.BATCH_SIZE
                 if cfg.CONDITIONAL and cfg.ACGAN:

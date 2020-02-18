@@ -10,8 +10,9 @@ def make_generator(hdf5_file, n_images, batch_size, res, label_name=None):
         images = np.zeros((batch_size, 3, res, res), dtype='int32')
         labels = np.zeros(batch_size, dtype='int32')
         indices = range(n_images)
-        random_state = np.random.RandomState(epoch_count[0])
-        random_state.shuffle(indices)
+        # todo: shuffle project
+        # random_state = np.random.RandomState(epoch_count[0])
+        # random_state.shuffle(indices)
         epoch_count[0] += 1
         for n, i in enumerate(indices):
             # assuming (N)CHW format

@@ -5,6 +5,7 @@ Image grid saver, based on color_grid_vis from github.com/Newmu
 import numpy as np
 import scipy.misc
 import imageio as imsave
+import imageio
 
 def save_images(X, save_path):
     # [0, 1] -> [0,255]
@@ -25,7 +26,7 @@ def save_images(X, save_path):
         # BCHW -> BHWC
         X = X.transpose(0,2,3,1)
         h, w = X[0].shape[:2]
-        img = np.zeros((h*nh, w*nw, 3))
+        img = np.zeros((int(h*nh), int(w*nw), 3))
     elif X.ndim == 3:
         h, w = X[0].shape[:2]
         img = np.zeros((h*nh, w*nw))
@@ -33,9 +34,11 @@ def save_images(X, save_path):
     for n, x in enumerate(X):
         j = n/nw
         i = n%nw
-        img[j*h:j*h+h, i*w:i*w+w] = x
+        # todo: this may need to be fixed
+        if img[int(j*h):int(j*h+h), int(i*w):int(i*w+w)].shape[0] == 32:
+            img[int(j*h):int(j*h+h), int(i*w):int(i*w+w)] = x
 
-    imsave(save_path, img)
+    imageio.imsave(save_path, img)
 
 def show_images(X):
     # [0, 1] -> [0,255]
