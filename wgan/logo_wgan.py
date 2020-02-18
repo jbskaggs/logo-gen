@@ -38,7 +38,7 @@ class Config(object):
         self.LABELS = 'labels/resnet/rc_128'  # Path to labels: Either the filesystem location of a pickle file
         #                                      containing the labels or the path to the label dataset within a HDF5 file
         self.N_LABELS = 0  # Number of label classes
-        self.RUN_NAME = 'layer_cond_clean'  # name for this experiment run
+        self.RUN_NAME = 'LLD-icon_rc_128'  # name for this experiment run
         self.N_GPUS = 1
         self.ARCHITECTURE = 'resnet-32'  # used GAN architecture
         self.MODE = 'wgan-gp'  # training mode
@@ -219,7 +219,7 @@ class WGAN(object):
                 old_dict = json.load(f)
             new_dict = self.cfg.__dict__
             equal = True
-            for key, value in old_dict.iteritems():
+            for key, value in old_dict.items():
                 if (key != 'train') and (key[:3] != 'bn_') and new_dict[key] != value:
                     print('New: %s: %s' % (key, new_dict[key]))
                     print('Old: %s: %s' % (key, value))
@@ -629,6 +629,8 @@ class WGAN(object):
                 print('INCEPTION SCORE:\t' + str(inception_score))
 
 
+import matplotlib.pyplot as plt
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     config_dict = Config().__dict__
@@ -651,4 +653,10 @@ if __name__ == '__main__':
             wgan = WGAN(session, config_dict=arg_dict, train=args.train)
         if args.train:
             wgan.train()
-        print(wgan.sample())
+
+        for i, img in enumerate(wgan.sample()):
+            # plt.imshow(img)
+            # plt.show()
+            # if i > 5:
+            #     break
+            plt.imsave("test/" + str(i) + ".png", np.ndarray.astype(img, 'uint8'))
