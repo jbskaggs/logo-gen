@@ -654,9 +654,10 @@ if __name__ == '__main__':
         if args.train:
             wgan.train()
 
-        for i, img in enumerate(wgan.sample()):
-            # plt.imshow(img)
-            # plt.show()
-            # if i > 5:
-            #     break
-            plt.imsave("test/" + str(i) + ".png", np.ndarray.astype(img, 'uint8'))
+        for j in range(10):
+            for i, img in enumerate(wgan.sample()):
+                # plt.imshow(img)
+                # plt.show()
+                # if i > 5:
+                #     break
+                plt.imsave("logo_output/" + str((j * 100) + i) + ".png", np.ndarray.astype(img, 'uint8'))
